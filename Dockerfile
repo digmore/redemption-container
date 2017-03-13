@@ -32,5 +32,5 @@ RUN bjam exe
 RUN bjam install
 
 EXPOSE 3389/tcp
-CMD ["/usr/local/bin/honcho", "-d", "/", "-f", "Procfile"]
+CMD ["/usr/local/bin/honcho", "-d", "/", "-f", "Procfile", "start"]
 
