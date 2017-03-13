@@ -14,10 +14,10 @@ RUN apt-get update \
 		libpng12-dev \
 		libsnappy-dev \
 		libssl-dev \
-                locales \
+		locales \
 		python-dev \
-                python-pkg-resources \
-                python-pip \
+		python-pkg-resources \
+		python-pip \
         && rm -fr /var/lib/apt/lists/* \
         && rm -fr /tmp/* \
         && rm -fr /var/tmp/*
@@ -25,11 +25,16 @@ RUN apt-get update \
 RUN pip install honcho
 COPY Procfile /Procfile
 
-RUN git clone https://github.com/wallix/redemption.git /opt/redemption
+RUN mkdir /opt/redemption
 WORKDIR /opt/redemption
-RUN git submodule init && git submodule update
-RUN bjam exe
-RUN bjam install
+
+# Using single RUN instruction to avoid build files ending up in image
+RUN git clone https://github.com/wallix/redemption.git /opt/redemption && \
+      git submodule init && git submodule update && \
+      bjam exe && \
+      bjam install && \
+      mv /opt/redemption/tools/passthrough /opt/passthrough && \
+      rm -rf /opt/redemption
 
 EXPOSE 3389/tcp
 CMD ["/usr/local/bin/honcho", "-d", "/", "-f", "Procfile", "start"]
